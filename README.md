@@ -8,9 +8,9 @@ When setting up your project in Cloudflare Pages dashboard, use these settings:
 
 ### Build Configuration
 - **Framework preset**: None (Static HTML)
-- **Build command**: (leave empty)
-- **Build output directory**: `main`
-- **Root directory**: `/` (default)
+- **Build command**: (leave empty or blank)
+- **Build output directory**: (leave empty or use `.`)
+- **Root directory**: `/main`
 
 ### Environment Variables
 None required for this static site.
@@ -18,13 +18,15 @@ None required for this static site.
 ## Project Structure
 ```
 atrey_app/
-├── main/                  # Your website files (deployment directory)
-│   ├── index.html
-│   ├── styles.css
-│   └── resources/
-├── wrangler.toml         # Cloudflare configuration
-└── README.md
+├── main/                  # Root directory for Cloudflare Pages
+│   ├── index.html        # Your main HTML file
+│   ├── styles.css        # Psychedelic CSS animations
+│   ├── resources/        # Put your gif1.gif here
+│   └── _headers          # Cloudflare headers for caching/security
+└── README.md             # This file
 ```
+
+**Note:** Since your root directory is set to `/main`, Cloudflare only sees files inside the `main` folder.
 
 ## Deployment Methods
 
@@ -40,18 +42,12 @@ atrey_app/
 1. Go to Cloudflare Pages dashboard
 2. Click "Create a project" → "Direct Upload"
 3. Upload the contents of the `main` folder
-4. Your site will be live in seconds
-
-### Method 3: Wrangler CLI
+4. Your site will be live  (from project root)
 ```bash
-# Install Wrangler globally (optional, or use npx)
-npm install -g wrangler
-
 # Login to Cloudflare
-wrangler login
+npx wrangler login
 
-# Deploy (use 'pages deploy' not just 'deploy')
-wrangler pages deploy main --project-name=atrey-app
+# Deploy the main folderect-name=atrey-app
 
 # Or with npx (no install needed)
 npx wrangler pages deploy main --project-name=atrey-app
