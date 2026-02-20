@@ -1,0 +1,30 @@
+═══════════════════════════════════════════════════════
+   CLOUDFLARE PAGES BUILD SETTINGS FOR ATREY.APP
+═══════════════════════════════════════════════════════
+
+Copy these EXACT settings into your Cloudflare Pages dashboard:
+
+Framework preset:        None
+Build command:           (leave empty)
+Build output directory:  .
+Root directory:          /main
+
+If "Deploy command" field exists:
+Deploy command:          exit 0
+
+═══════════════════════════════════════════════════════
+
+QUICK STEPS:
+1. Go to your Pages project settings
+2. Clear the "Deploy command" (or set to "exit 0")
+3. Make sure Root directory is "/main"
+4. Build output directory is "."
+5. Save and retry deployment
+
+After deployment:
+- Go to "Custom domains" tab
+- Add "atrey.app"
+- Add "www.atrey.app"
+- Wait 5-10 minutes for SSL
+
+Done! Your site will be live at atrey.app
