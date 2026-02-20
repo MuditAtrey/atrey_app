@@ -1,6 +1,5 @@
 # Cloudflare Pages Configuration
-name = "atrey-app"
-compatibility_date = "2026-02-20"
+# For Pages, most configuration is done via the dashboard or CLI flags
+# This file can remain minimal or be removed entirely
 
-[site]
-bucket = "./main"
+name = "atrey-app"

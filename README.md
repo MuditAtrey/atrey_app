@@ -44,14 +44,17 @@ atrey_app/
 
 ### Method 3: Wrangler CLI
 ```bash
-# Install Wrangler
+# Install Wrangler globally (optional, or use npx)
 npm install -g wrangler
 
 # Login to Cloudflare
 wrangler login
 
-# Deploy
+# Deploy (use 'pages deploy' not just 'deploy')
 wrangler pages deploy main --project-name=atrey-app
+
+# Or with npx (no install needed)
+npx wrangler pages deploy main --project-name=atrey-app
 ```
 
 ## Local Development
