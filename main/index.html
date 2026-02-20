@@ -3,10 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>Scientific Calculator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Background GIF -->
     <img src="resources/gif1.gif" alt="Background">
+    
+    <!-- Calculator Pane -->
+    <div class="calculator-container">
+        <div class="calculator">
+            <div class="calculator-header">
+                <h2>Scientific Calculator</h2>
+                <span class="mode-indicator">RAD</span>
+            </div>
+            
+            <div class="display-container">
+                <div class="memory-indicator" id="memoryIndicator"></div>
+                <div class="expression" id="expression"></div>
+                <input type="text" class="display" id="display" value="0" readonly>
+            </div>
+            
+            <div class="calculator-buttons">
+                <!-- Row 1: Memory & Special Functions -->
+                <button class="btn btn-memory" data-action="mc">MC</button>
+                <button class="btn btn-memory" data-action="mr">MR</button>
+                <button class="btn btn-memory" data-action="m+">M+</button>
+                <button class="btn btn-memory" data-action="m-">M-</button>
+                <button class="btn btn-function" data-action="clear">C</button>
+                <button class="btn btn-function" data-action="backspace">←</button>
+                
+                <!-- Row 2: Scientific Functions -->
+                <button class="btn btn-function" data-action="sin">sin</button>
+                <button class="btn btn-function" data-action="cos">cos</button>
+                <button class="btn btn-function" data-action="tan">tan</button>
+                <button class="btn btn-function" data-action="ln">ln</button>
+                <button class="btn btn-function" data-action="log">log</button>
+                <button class="btn btn-operator" data-operator="^">x^y</button>
+                
+                <!-- Row 3: More Scientific Functions -->
+                <button class="btn btn-function" data-action="asin">asin</button>
+                <button class="btn btn-function" data-action="acos">acos</button>
+                <button class="btn btn-function" data-action="atan">atan</button>
+                <button class="btn btn-function" data-action="sqrt">√</button>
+                <button class="btn btn-function" data-action="cbrt">∛</button>
+                <button class="btn btn-function" data-action="square">x²</button>
+                
+                <!-- Row 4: Hyperbolic & Advanced -->
+                <button class="btn btn-function" data-action="sinh">sinh</button>
+                <button class="btn btn-function" data-action="cosh">cosh</button>
+                <button class="btn btn-function" data-action="tanh">tanh</button>
+                <button class="btn btn-function" data-action="exp">e^x</button>
+                <button class="btn btn-function" data-action="factorial">n!</button>
+                <button class="btn btn-function" data-action="abs">|x|</button>
+                
+                <!-- Row 5: Constants & Special -->
+                <button class="btn btn-constant" data-constant="pi">π</button>
+                <button class="btn btn-constant" data-constant="e">e</button>
+                <button class="btn btn-constant" data-constant="phi">φ</button>
+                <button class="btn btn-function" data-action="deg">DEG</button>
+                <button class="btn btn-function" data-action="rad">RAD</button>
+                <button class="btn btn-operator" data-operator="%">mod</button>
+                
+                <!-- Row 6: Numbers & Basic Operations -->
+                <button class="btn btn-number" data-number="7">7</button>
+                <button class="btn btn-number" data-number="8">8</button>
+                <button class="btn btn-number" data-number="9">9</button>
+                <button class="btn btn-operator" data-operator="/">÷</button>
+                <button class="btn btn-function" data-action="floor">⌊x⌋</button>
+                <button class="btn btn-function" data-action="ceil">⌈x⌉</button>
+                
+                <!-- Row 7 -->
+                <button class="btn btn-number" data-number="4">4</button>
+                <button class="btn btn-number" data-number="5">5</button>
+                <button class="btn btn-number" data-number="6">6</button>
+                <button class="btn btn-operator" data-operator="*">×</button>
+                <button class="btn btn-function" data-action="(">(</button>
+                <button class="btn btn-function" data-action=")">)</button>
+                
+                <!-- Row 8 -->
+                <button class="btn btn-number" data-number="1">1</button>
+                <button class="btn btn-number" data-number="2">2</button>
+                <button class="btn btn-number" data-number="3">3</button>
+                <button class="btn btn-operator" data-operator="-">−</button>
+                <button class="btn btn-function" data-action="ans">ANS</button>
+                <button class="btn btn-function" data-action="round">⌊x⌉</button>
+                
+                <!-- Row 9 -->
+                <button class="btn btn-number" data-number="0">0</button>
+                <button class="btn btn-number" data-number=".">.</button>
+                <button class="btn btn-function" data-action="negate">±</button>
+                <button class="btn btn-operator" data-operator="+">+</button>
+                <button class="btn btn-equals" data-action="equals" style="grid-column: span 2;">=</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebAssembly Module -->
+    <script src="calculator.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

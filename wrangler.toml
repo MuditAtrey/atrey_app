@@ -1,5 +1,12 @@
 # Cloudflare Pages Configuration
-# For Pages, most configuration is done via the dashboard or CLI flags
-# This file can remain minimal or be removed entirely
-
 name = "atrey-app"
+
+# Pages configuration
+[build]
+command = ""
+cwd = ""
+watch_dir = "main"
+
+# The main/ directory contains all static assets
+# This is the publish directory for Cloudflare Pages
+pages_build_output_dir = "main"
