@@ -396,26 +396,12 @@
           </h3>
         </div>
         <p class="article-summary">
-          When global optimizers are coupled with low-order vortex lattice methods (VLM), they discover numerical loopholes in the solver rather than viable physics: non-monotonic chord reversals, severe camber reflex, and panel aspect ratio singularities reporting non-physical glide ratios exceeding 28. How I formulated C1-continuous Hermite manifolds to enforce geometric invariants, and what 3D RANS CFD revealed about the 124% parasite drag rise at winglet junctions.
+          When global optimizers are coupled with low-order vortex lattice methods (VLM) without geometric regularization, 35.5% of evaluations waste compute exploring chord-inverted topologies with a 29% penalty in max L/D (12.89 vs 18.15) without solver divergence. How I formulated C1-continuous Hermite manifolds to enforce geometric invariants across 10,087 evaluations, and what post-submission 3D RANS CFD revealed about a 124% parasite drag rise at winglet junctions.
         </p>
         <a href="writeups/bwb-mdo-solver-exploitation.html" class="read-more-link">Read writeup &rarr;</a>
       </article>
 
       <!-- Article 2 -->
-      <article class="article-entry">
-        <div class="article-header">
-          <div class="article-meta">September 2026 &bull; Ballistic GNC & Mechanical Dynamics &bull; 6 min read</div>
-          <h3 class="article-title">
-            <a href="writeups/155mm-artillery-roll-despin.html">Despinning a 155mm Artillery Shell in 1.2 Seconds: 7-DOF Dynamics and Terminal Guidance</a>
-          </h3>
-        </div>
-        <p class="article-summary">
-          At 300 rps (18,000 RPM) muzzle rifling spin, canards cannot execute coherent trajectory corrections without actuator saturation. I decoupled the forward steering head from the projectile body using a 1-DOF roll-isolated collar on dual angular contact bearings. Supported by passive permanent magnet eddy-current damping, the collar attenuates roll from 300 rps to below 5 rps in 1.2 seconds, enabling terminal Augmented Proportional Navigation (APN) and 16-state EKF estimation through 25-second GNSS denial windows.
-        </p>
-        <a href="writeups/155mm-artillery-roll-despin.html" class="read-more-link">Read writeup &rarr;</a>
-      </article>
-
-      <!-- Article 3 -->
       <article class="article-entry">
         <div class="article-header">
           <div class="article-meta">August 2026 &bull; Systems Engineering & CAD Tooling &bull; 5 min read</div>
@@ -429,21 +415,34 @@
         <a href="writeups/programmatic-cad-onshape.html" class="read-more-link">Read writeup &rarr;</a>
       </article>
 
-      <!-- Article 4 -->
+      <!-- Article 3 -->
       <article class="article-entry">
         <div class="article-header">
           <div class="article-meta">July 2026 &bull; Systems & Data Engineering &bull; 3 min read</div>
           <h3 class="article-title">
-            <a href="#systems-note">Pruning Eager Evaluations in Lazy Dataframe Pipelines</a>
+            <a href="https://github.com/pulls?q=author%3AMuditAtrey+repo%3Aprobabl-ai%2Fskrub+repo%3Aprobabl-ai%2Fskore" target="_blank" rel="noopener noreferrer">Pruning Eager Evaluations in Lazy Dataframe Pipelines</a>
           </h3>
         </div>
         <p class="article-summary">
           Lessons from 5 merged pull requests in the scikit-learn ecosystem (probabl-ai: skrub and skore). How unintended eager evaluations on Polars lazyframes degrade memory locality during complex tabular feature encoding, and designing figure legend export persistence across matplotlib backends.
         </p>
-        <a href="assets/docs/Mudit_Atrey_CV.pdf" class="read-more-link">View contributions in CV &rarr;</a>
+        <a href="https://github.com/pulls?q=author%3AMuditAtrey+repo%3Aprobabl-ai%2Fskrub+repo%3Aprobabl-ai%2Fskore" target="_blank" rel="noopener noreferrer" class="read-more-link">View merged PRs on GitHub &rarr;</a>
       </article>
 
-    </section>
+      <!-- Article 4 -->
+      <article class="article-entry">
+        <div class="article-header">
+          <div class="article-meta">September 2026 &bull; Ballistic GNC & Mechanical Dynamics &bull; 6 min read</div>
+          <h3 class="article-title">
+            <a href="writeups/155mm-artillery-roll-despin.html">Despinning a 155mm Artillery Shell in 1.2 Seconds: 7-DOF Dynamics and Terminal Guidance</a>
+          </h3>
+        </div>
+        <p class="article-summary">
+          At 300 rps (18,000 RPM) muzzle rifling spin, canards cannot execute coherent trajectory corrections without actuator saturation. I decoupled the forward steering head from the projectile body using a 1-DOF roll-isolated collar on dual angular contact bearings. Supported by passive permanent magnet eddy-current damping, the collar attenuates roll from 300 rps to below 5 rps in 1.2 seconds, enabling terminal Augmented Proportional Navigation (APN) and 16-state EKF estimation through 25-second GNSS denial windows.
+        </p>
+        <a href="writeups/155mm-artillery-roll-despin.html" class="read-more-link">Read writeup &rarr;</a>
+      </article>
+</section>
 
     <!-- SECTION 2: RESEARCH PREPRINTS & MANUSCRIPTS -->
     <section>
@@ -455,7 +454,7 @@
           Physics-Regularized Geometric Manifolds for Efficient Surrogate-Assisted MDO of Tailless BWB UAVs
         </div>
         <div class="pub-meta">
-          <strong>Author:</strong> Mudit Atrey (First & Sole Author)<br>
+          <strong>Author:</strong> Mudit Atrey (Sole Author)<br>
           <strong>Status:</strong> Under external peer review at <em>Aerospace Science and Technology</em> (Elsevier, Impact Factor: 6.4, Q1 Quartile). Manuscript ID: AESCTE-D-26-06017.<br>
           <strong>Preprint DOI:</strong> 10.5281/zenodo.22893593
         </div>
@@ -475,7 +474,7 @@
         Selected high-resolution simulation telemetry, aerodynamic renders, and CAD mechanisms. Click any plate to inspect.
       </p>
 
-      <div class="figures-grid">
+            <div class="figures-grid">
         <!-- 1 -->
         <div class="figure-card" onclick="openLightbox('assets/images/bwb_hero_desert.jpg', 'Tailless BWB UAV in Desert Cruise Flight (4K KeyShot Render)')">
           <div class="figure-thumb"><img src="assets/images/bwb_hero_desert.jpg" alt="BWB UAV Desert Flight" loading="lazy"></div>
@@ -504,20 +503,20 @@
         </div>
 
         <!-- 4 -->
-        <div class="figure-card" onclick="openLightbox('assets/images/fuze_hero_round.png', '155mm Projectile with Precision Guidance Kit (KeyShot Studio Render)')">
-          <div class="figure-thumb"><img src="assets/images/fuze_hero_round.png" alt="155mm Shell Hero" loading="lazy"></div>
+        <div class="figure-card" onclick="openLightbox('assets/images/onshape_drone_iso.png', 'Parametric B-Rep UAV Airframe Modeled via programmatic onshape-mcp')">
+          <div class="figure-thumb"><img src="assets/images/onshape_drone_iso.png" alt="Onshape Parametric CAD Airframe" loading="lazy"></div>
           <div class="figure-cap">
-            <strong>Ballistics &bull; Munitions</strong>
-            155mm Shell with Precision Guidance Kit
+            <strong>CAD &bull; Kernel</strong>
+            Parametric B-Rep Airframe Solid Body
           </div>
         </div>
 
         <!-- 5 -->
-        <div class="figure-card" onclick="openLightbox('assets/images/fuze_despin_bearing_macro.png', 'Mechanical Despin Collar with Dual Angular Contact Bearings')">
-          <div class="figure-thumb"><img src="assets/images/fuze_despin_bearing_macro.png" alt="Despin Bearing Macro" loading="lazy"></div>
+        <div class="figure-card" onclick="openLightbox('assets/images/bwb_exploded_assembly.jpg', 'Internal Packaging and Structural Rib Assembly of Tailless Airframe')">
+          <div class="figure-thumb"><img src="assets/images/bwb_exploded_assembly.jpg" alt="BWB Structural Assembly" loading="lazy"></div>
           <div class="figure-cap">
-            <strong>Mechanisms &bull; Roll Despin</strong>
-            Passive Despin Collar & Bearing Macro
+            <strong>Structures &bull; Packaging</strong>
+            Airframe Rib & Internal Component Assembly
           </div>
         </div>
 
