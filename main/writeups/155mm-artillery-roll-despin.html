@@ -129,6 +129,30 @@
       gap: 1rem;
     }
   </style>
+  <!-- KaTeX for mathematical typesetting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      function runKaTeX() {
+        if (typeof renderMathInElement === "function") {
+          renderMathInElement(document.body, {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false},
+              {left: "\\(", right: "\\)", display: false},
+              {left: "\\[", right: "\\]", display: true}
+            ],
+            throwOnError: false
+          });
+        } else {
+          setTimeout(runKaTeX, 50);
+        }
+      }
+      runKaTeX();
+    });
+  </script>
 </head>
 <body>
 
@@ -165,8 +189,8 @@
       This configuration is mathematically governed by a 7-Degree-of-Freedom (7-DOF) dynamic formulation:
     </p>
     <ul>
-      <li><strong>Standard 6-DOF Body Dynamics:</strong> 3 translational degrees of freedom (position and velocity in the inertial frame) and 3 rotational degrees of freedom (pitch, yaw, and main projectile roll).</li>
-      <li><strong>7th Degree of Freedom (Collar Relative Roll):</strong> The independent roll angle of the forward steering collar relative to the spinning projectile body, governed by bearing friction, aerodynamic canard roll moments, and mechanical damping torques.</li>
+      <li><strong>Standard 6-DOF Body Dynamics:</strong> 3 translational degrees of freedom (inertial position $\mathbf{p} \in \mathbb{R}^3$, velocity $\mathbf{v} \in \mathbb{R}^3$) and 3 rotational degrees of freedom (pitch $\theta$, yaw $\psi$, body spin rate $p_{\mathrm{body}} \approx 300\,\text{rps}$).</li>
+      <li><strong>7th Degree of Freedom (Collar Relative Roll):</strong> The independent roll angle of the forward steering collar relative to the spinning body ($\phi_{\mathrm{rel}}$), governed by bearing raceway friction, aerodynamic canard roll trim, and passive permanent magnet eddy-current braking torque.</li>
     </ul>
 
     <figure>
@@ -183,7 +207,7 @@
       Upon clearing the muzzle brake, the forward collar initially spins at near-muzzle rate due to setback friction. To establish control authority quickly, passive permanent magnet eddy-current damping brakes act against the spinning body.
     </p>
     <p>
-      Supported by high-load dual angular contact bearings conforming to the NATO 2-inch-12UNS standard fuze thread, the collar roll rate decays from 300 rps to below 5 rps within 1.2 seconds of exit. Once the roll rate falls below 5 rps, the forward guidance computer can execute full-authority aerodynamic maneuvers without actuator saturation.
+      Supported by high-load dual angular contact bearings conforming to the NATO 2-inch-12UNS standard fuze thread, the collar roll rate decays from $300\,\text{rps}$ to below $5\,\text{rps}$ ($p_{\mathrm{collar}} < 5\,\text{rps}$) within $1.2\,\text{seconds}$ of muzzle exit. Once the roll rate falls below $5\,\text{rps}$, the forward guidance computer can execute full-authority aerodynamic maneuvers without actuator saturation.
     </p>
 
     <figure>
@@ -197,10 +221,15 @@
 
     <h2>3. Terminal Guidance Law: Augmented Proportional Navigation</h2>
     <p>
-      Once stabilized, the projectile follows a nominal unguided ballistic trajectory during the ascending leg to conserve control energy. During terminal descent, the guidance computer activates Augmented Proportional Navigation (APN) commanding two pairs of titanium cruciform canards.
+      Once stabilized, the projectile follows a nominal unguided ballistic trajectory during the ascending leg to conserve control energy. During terminal descent, the guidance computer activates Augmented Proportional Navigation (APN) commanding two pairs of titanium cruciform canards:
+    </p>
+    <div style="margin: 1.5rem 0; overflow-x: auto; text-align: center;">
+      $$\mathbf{a}_{\mathrm{cmd}} = N^\prime V_m (\boldsymbol{\Omega} \times \hat{\mathbf{v}}_m) + \frac{N^\prime}{2} \mathbf{a}_t$$
+    </div>
+    <p>
     </p>
     <p>
-      In 1,000-shot Monte Carlo ballistic simulations accounting for crosswinds, atmospheric density variations, and gun propellant temperature fluctuations, the unguided baseline impact dispersion had a Circular Error Probable (CEP) of over 120 meters. Under closed-loop APN guidance, simulated CEP was reduced to 2.34 meters over a 20km ballistic arc.
+      In 1,000-shot Monte Carlo ballistic simulations accounting for crosswinds, atmospheric density variations, and gun propellant temperature fluctuations, the unguided baseline impact dispersion had a Circular Error Probable ($\text{CEP} > 120\,\text{m}$). Under closed-loop APN guidance, simulated CEP was reduced to $2.34\,\text{m}$ over a $20\,\text{km}$ ballistic arc ($\text{CEP} \le 30\,\text{m}$ operational target).
     </p>
 
     <figure>
@@ -217,10 +246,13 @@
       Modern battlefield environments feature intense electronic warfare, including GPS jamming and spoofing along artillery corridors. A precision guidance kit that depends entirely on satellite navigation will fail when jammed.
     </p>
     <p>
-      We engineered a 16-state Extended Kalman Filter (EKF) executed at 500Hz:
+      We engineered a 16-state Extended Kalman Filter (EKF) executed at $500\,\text{Hz}$ with state vector $\mathbf{x} \in \mathbb{R}^{16}$:
+    <div style="margin: 1.5rem 0; overflow-x: auto; text-align: center;">
+      $$\mathbf{x} = \begin{bmatrix} \mathbf{p}_{3\times 1}^\top & \mathbf{v}_{3\times 1}^\top & \mathbf{q}_{4\times 1}^\top & \mathbf{b}_{a, 3\times 1}^\top & \mathbf{b}_{g, 3\times 1}^\top \end{bmatrix}^\top$$
+    </div>
     </p>
     <ul>
-      <li><strong>State Vector:</strong> Position (3), velocity (3), attitude quaternion (4), accelerometer bias (3), and gyroscope bias (3).</li>
+      <li><strong>State Vector:</strong> 3D position $\mathbf{p}$, velocity $\mathbf{v}$, attitude quaternion $\mathbf{q}$, accelerometer bias $\mathbf{b}_a$, and gyroscope bias $\mathbf{b}_g$.</li>
       <li><strong>Dead-Reckoning Durability:</strong> Under a simulated 25-second GNSS denial window during the critical terminal descent phase, the filter propagates states using tactical-grade IMU measurements corrected for known ballistic drag profiles.</li>
       <li><strong>Performance:</strong> Drift remained bounded, ensuring final impact accuracy comfortably fulfilled the sub-30m operational requirement.</li>
     </ul>
