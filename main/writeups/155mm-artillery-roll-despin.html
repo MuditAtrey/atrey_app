@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Despinning a 155mm Artillery Shell in 1.2 Seconds: 7-DOF Dynamics & Terminal Guidance | Mudit Atrey</title>
+  <meta name="description" content="Technical writeup on 7-DOF ballistic trajectory modeling, passive mechanical despin collar dynamics, 16-state EKF under GNSS denial, and terminal canard guidance.">
+
+  <style>
+    :root {
+      --bg-color: #FDFCF9;
+      --text-color: #111111;
+      --accent-color: #555555;
+      --dim-color: #777777;
+      --link-color: #111111;
+      --link-hover: #555555;
+      --border-color: #E5E4E2;
+      --border-dark: #CCCCCC;
+      --bg-subtle: #F6F5F1;
+      --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem 6rem;
+    }
+    a {
+      color: var(--link-color);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+    }
+    a:hover { color: var(--link-hover); }
+
+    header {
+      margin-bottom: 2.8rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .back-link {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--accent-color);
+    }
+    .back-link:hover { color: var(--text-color); text-decoration: underline; }
+
+    .article-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4.5vw, 2.7rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+    .article-meta {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--dim-color);
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      margin: 2.4rem 0 0.8rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    h3 {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 1.6rem 0 0.5rem;
+    }
+    p { margin-bottom: 1.25rem; color: var(--text-color); }
+    ul { margin: 1rem 0 1.4rem 1.5rem; }
+    li { margin-bottom: 0.45rem; }
+
+    figure { margin: 2rem 0; }
+    .figure-frame {
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+    .figure-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    figcaption {
+      font-size: 0.82rem;
+      color: var(--accent-color);
+      line-height: 1.5;
+      margin-top: 0.5rem;
+      padding: 0 0.15rem;
+    }
+    figcaption strong {
+      color: var(--text-color);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    footer {
+      margin-top: 4.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      color: var(--dim-color);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">&larr; Back to atrey.app</a>
+    <h1 class="article-title">Despinning a 155mm Artillery Shell in 1.2 Seconds: 7-DOF Dynamics and Terminal Guidance</h1>
+    <div class="article-meta">
+      Published September 2026 &bull; Mudit Atrey &bull; Ballistic GNC & Mechanical Dynamics
+    </div>
+  </header>
+
+  <main>
+    <p>
+      Transforming conventional unguided artillery ammunition into precision-guided munitions represents one of the most demanding problems in flight dynamics and control. Standard 155mm howitzer shells rely on rifling twist to spin at approximately 300 revolutions per second (18,000 RPM) at muzzle exit, providing gyroscopic stability throughout the trajectory.
+    </p>
+    <p>
+      At 300 rps, conventional steerable aerodynamic control surfaces face a severe physical limitation: actuator bandwidth cannot track the rapidly rotating aerodynamic reference frame to deliver a coherent lateral steering force. Actuating canards at that frequency results in massive power dissipation and negligible net course correction.
+    </p>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/fuze_hero_round.png" alt="155mm Artillery Shell with Guidance Kit" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 1.</strong> 155mm projectile equipped with the Project Claymore precision guidance kit. KeyShot studio render.
+      </figcaption>
+    </figure>
+
+    <h2>1. The 7-DOF Dynamic Formulation</h2>
+    <p>
+      The core engineering insight is mechanical roll isolation. Instead of attempting to control the entire spinning projectile, the forward guidance head is mechanically decoupled from the main shell body via a low-friction bearing raceway.
+    </p>
+    <p>
+      This configuration is mathematically governed by a 7-Degree-of-Freedom (7-DOF) dynamic formulation:
+    </p>
+    <ul>
+      <li><strong>Standard 6-DOF Body Dynamics:</strong> 3 translational degrees of freedom (position and velocity in the inertial frame) and 3 rotational degrees of freedom (pitch, yaw, and main projectile roll).</li>
+      <li><strong>7th Degree of Freedom (Collar Relative Roll):</strong> The independent roll angle of the forward steering collar relative to the spinning projectile body, governed by bearing friction, aerodynamic canard roll moments, and mechanical damping torques.</li>
+    </ul>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/fuze_despin_bearing_macro.png" alt="Dual Angular Contact Bearing Assembly" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 2.</strong> Mechanical despin collar supported by dual angular contact bearings and permanent magnet damping.
+      </figcaption>
+    </figure>
+
+    <h2>2. Rapid Mechanical Despin via Permanent Magnet Damping</h2>
+    <p>
+      Upon clearing the muzzle brake, the forward collar initially spins at near-muzzle rate due to setback friction. To establish control authority quickly, passive permanent magnet eddy-current damping brakes act against the spinning body.
+    </p>
+    <p>
+      Supported by high-load dual angular contact bearings conforming to the NATO 2-inch-12UNS standard fuze thread, the collar roll rate decays from 300 rps to below 5 rps within 1.2 seconds of exit. Once the roll rate falls below 5 rps, the forward guidance computer can execute full-authority aerodynamic maneuvers without actuator saturation.
+    </p>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/fuze_titanium_canards.png" alt="Titanium Steering Canards" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 3.</strong> Titanium cruciform canards and brushless servo steering head.
+      </figcaption>
+    </figure>
+
+    <h2>3. Terminal Guidance Law: Augmented Proportional Navigation</h2>
+    <p>
+      Once stabilized, the projectile follows a nominal unguided ballistic trajectory during the ascending leg to conserve control energy. During terminal descent, the guidance computer activates Augmented Proportional Navigation (APN) commanding two pairs of titanium cruciform canards.
+    </p>
+    <p>
+      In 1,000-shot Monte Carlo ballistic simulations accounting for crosswinds, atmospheric density variations, and gun propellant temperature fluctuations, the unguided baseline impact dispersion had a Circular Error Probable (CEP) of over 120 meters. Under closed-loop APN guidance, simulated CEP was reduced to 2.34 meters over a 20km ballistic arc.
+    </p>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/fuze_monte_carlo_dispersion.png" alt="1,000-Shot Monte Carlo Dispersion Reduction" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 4.</strong> 1,000-shot Monte Carlo impact dispersion comparison showing reduction from 120m unguided footprint to 2.34m simulated CEP.
+      </figcaption>
+    </figure>
+
+    <h2>4. State Estimation Under Electronic Warfare GNSS Denial</h2>
+    <p>
+      Modern battlefield environments feature intense electronic warfare, including GPS jamming and spoofing along artillery corridors. A precision guidance kit that depends entirely on satellite navigation will fail when jammed.
+    </p>
+    <p>
+      We engineered a 16-state Extended Kalman Filter (EKF) executed at 500Hz:
+    </p>
+    <ul>
+      <li><strong>State Vector:</strong> Position (3), velocity (3), attitude quaternion (4), accelerometer bias (3), and gyroscope bias (3).</li>
+      <li><strong>Dead-Reckoning Durability:</strong> Under a simulated 25-second GNSS denial window during the critical terminal descent phase, the filter propagates states using tactical-grade IMU measurements corrected for known ballistic drag profiles.</li>
+      <li><strong>Performance:</strong> Drift remained bounded, ensuring final impact accuracy comfortably fulfilled the sub-30m operational requirement.</li>
+    </ul>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/fuze_gnss_jamming_telemetry.png" alt="GNSS Denial Telemetry" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 5.</strong> Trajectory estimation telemetry during a simulated 25-second GNSS blackout event, demonstrating 16-state EKF stability.
+      </figcaption>
+    </figure>
+
+    <h2>5. Summary</h2>
+    <p>
+      By decoupling the high-spin projectile physics from the aerodynamic steering surfaces through mechanical roll isolation, precision guidance can be achieved on standard NATO artillery without requiring costly full-body despin systems.
+    </p>
+  </main>
+
+  <footer>
+    <div>&copy; 2026 Mudit Atrey &bull; atrey.app</div>
+    <div><a href="../index.html">Return to Homepage</a></div>
+  </footer>
+
+</body>
+</html>
