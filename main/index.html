@@ -1,142 +1,1427 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mudit Atrey</title>
-    <style>
-        :root {
-            /* Journalistic aesthetic: warm off-white background, high contrast text */
-            --bg-color: #FDFCF9; 
-            --text-color: #111111;
-            --accent-color: #555555;
-            --link-color: #222222;
-            --link-hover: #666666;
-            --border-color: #E5E4E2;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mudit Atrey | Aerospace MDO, Autonomous Systems & Scientific Computing</title>
+  <meta name="description" content="Technical Portfolio of Mudit Atrey. First-author researcher at Elsevier AST (IF 6.4, Q1), SIH 2026 Defense Lead, contributor to scikit-learn ecosystem.">
+  
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="Mudit Atrey | Aerospace MDO, Autonomous Systems & Scientific Computing">
+  <meta property="og:description" content="Technical Portfolio of Mudit Atrey: Physics-informed surrogate MDO, 7-DOF ballistic trajectory guidance, 16-state EKF sensor fusion, and systems engineering.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://atrey.app">
+  <meta property="og:image" content="https://atrey.app/assets/images/bwb_hero_desert.jpg">
 
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            text-align: center;
-            padding: 2rem;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 600px;
-            width: 100%;
-            animation: fadeIn 0.8s ease-out forwards;
-            opacity: 0;
-        }
+  <style>
+    :root {
+      --bg: #07080b;
+      --bg-card: #0d0f15;
+      --bg-card-hover: #131720;
+      --bg-glass: rgba(13, 15, 21, 0.82);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-light: rgba(255, 255, 255, 0.16);
+      --text: #f0f3f8;
+      --text-muted: #8b94a0;
+      --text-dim: #5c6470;
+      --cyan: #00e5ff;
+      --cyan-glow: rgba(0, 229, 255, 0.2);
+      --cyan-subtle: rgba(0, 229, 255, 0.08);
+      --orange: #ff9d00;
+      --orange-glow: rgba(255, 157, 0, 0.2);
+      --orange-subtle: rgba(255, 157, 0, 0.08);
+      --emerald: #00e676;
+      --emerald-glow: rgba(0, 230, 118, 0.2);
+      --emerald-subtle: rgba(0, 230, 118, 0.08);
+      --purple: #a855f7;
+      --purple-subtle: rgba(168, 85, 247, 0.08);
+      --font-display: "Outfit", -apple-system, sans-serif;
+      --font-body: "Inter", -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        h1 {
-            /* Classic serif for journalistic feel (like Anthropic/NYT) */
-            font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 400;
-            margin: 0 0 1rem 0;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-        }
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+    }
 
-        p {
-            font-size: clamp(1rem, 2.5vw, 1.25rem);
-            font-weight: 400;
-            color: var(--accent-color);
-            margin: 0 0 3.5rem 0;
-            line-height: 1.6;
-            letter-spacing: -0.01em;
-        }
+    body {
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(0, 229, 255, 0.04) 0%, transparent 45%),
+        radial-gradient(circle at 90% 40%, rgba(255, 157, 0, 0.035) 0%, transparent 50%),
+        radial-gradient(circle at 50% 85%, rgba(0, 230, 118, 0.03) 0%, transparent 50%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+    }
 
-        .links {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-        .link-item {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            text-decoration: none;
-            color: var(--link-color);
-            font-size: 0.95rem;
-            padding: 0.6rem 1.2rem;
-            border: 1px solid var(--border-color);
-            border-radius: 999px;
-            transition: all 0.2s ease;
-            background: transparent;
-        }
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
 
-        .link-item:hover {
-            color: var(--link-hover);
-            background-color: rgba(0,0,0,0.02);
-            border-color: #CCCBC8;
-        }
+    /* Header & Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: var(--bg-glass);
+      border-bottom: 1px solid var(--border);
+    }
 
-        .icon {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 66px;
+    }
 
-        @media (max-width: 480px) {
-            .links {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-            .link-item {
-                width: 100%;
-                justify-content: center;
-                box-sizing: border-box;
-            }
-        }
-    </style>
+    .brand {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .brand-dot {
+      width: 9px;
+      height: 9px;
+      background-color: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse 2.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--cyan);
+      transition: color 0.2s;
+    }
+
+    .btn-nav {
+      background: var(--cyan-subtle);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 0.45rem 1.05rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--cyan);
+      color: #04080f;
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 5.5rem 0 3.5rem;
+      position: relative;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.38rem 0.95rem;
+      border-radius: 999px;
+      background: var(--emerald-subtle);
+      border: 1px solid rgba(0, 230, 118, 0.25);
+      color: #69f0ae;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      margin-bottom: 1.6rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5.2vw, 4.3rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      margin-bottom: 1.1rem;
+      max-width: 980px;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, #ffffff 25%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 1.9vw, 1.25rem);
+      color: var(--text-muted);
+      font-weight: 400;
+      max-width: 820px;
+      line-height: 1.6;
+      margin-bottom: 2.2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-bottom: 2.8rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: #040910;
+      border: 1px solid var(--cyan);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 22px var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+    }
+
+    /* Metrics Strip */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      padding: 1.4rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-top: 1rem;
+    }
+
+    .metric-item {
+      padding: 0.4rem 0.6rem;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 0.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Section Headers */
+    .section-head {
+      margin: 5rem 0 2.2rem;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.45rem;
+    }
+
+    .tag-defense {
+      color: var(--orange);
+    }
+
+    .tag-systems {
+      color: var(--emerald);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.2vw, 2.3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Project Cards */
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 3rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .project-card:hover {
+      border-color: var(--border-light);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 0;
+    }
+
+    @media (max-width: 950px) {
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-content {
+      padding: 2.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .project-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.28rem 0.7rem;
+      border-radius: 4px;
+      background: var(--cyan-subtle);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      margin-bottom: 0.9rem;
+    }
+
+    .badge-defense {
+      background: var(--orange-subtle);
+      color: var(--orange);
+      border-color: rgba(255, 157, 0, 0.25);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 0.95rem;
+      letter-spacing: -0.015em;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      margin-bottom: 1.3rem;
+    }
+
+    .specs-list {
+      list-style: none;
+      margin-bottom: 1.8rem;
+      font-size: 0.88rem;
+    }
+
+    .specs-list li {
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: baseline;
+      gap: 0.55rem;
+    }
+
+    .specs-list li::before {
+      content: "▹";
+      color: var(--cyan);
+      font-size: 0.95rem;
+    }
+
+    .specs-list.defense-list li::before {
+      color: var(--orange);
+    }
+
+    .card-media {
+      background: #040508;
+      position: relative;
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-media:hover img {
+      transform: scale(1.035);
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Media Strip Gallery */
+    .media-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+      padding: 0.9rem 2rem 1.8rem;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 800px) {
+      .media-strip {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .strip-thumb {
+      height: 85px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      background: #050609;
+    }
+
+    .strip-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .strip-thumb:hover img {
+      opacity: 0.85;
+      transform: scale(1.05);
+    }
+
+    /* Sub-grid Cards (Systems & Downloads) */
+    .sub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.8rem;
+    }
+
+    .sub-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s, border-color 0.25s;
+    }
+
+    .sub-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-light);
+    }
+
+    .sub-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      margin: 0.4rem 0 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .sub-card p {
+      font-size: 0.89rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.3rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: auto;
+    }
+
+    .tech-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.22rem 0.55rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #a8b3c4;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Filterable Visual Dossier Gallery */
+    .gallery-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .filter-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      color: var(--text);
+      border-color: var(--border-light);
+    }
+
+    .filter-btn.active {
+      background: var(--cyan-subtle);
+      color: var(--cyan);
+      border-color: rgba(0, 229, 255, 0.4);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 4rem;
+    }
+
+    .gallery-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 229, 255, 0.35);
+    }
+
+    .gallery-thumb {
+      height: 190px;
+      overflow: hidden;
+      background: #040508;
+      position: relative;
+    }
+
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .gallery-item:hover .gallery-thumb img {
+      transform: scale(1.05);
+    }
+
+    .gallery-meta {
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .gallery-meta .item-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .gallery-meta .item-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    /* Lightbox Modal */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(14px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-img {
+      max-width: 92vw;
+      max-height: 84vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--border);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      font-size: 2.2rem;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+
+    .lightbox-close:hover {
+      opacity: 1;
+    }
+
+    .lightbox-caption {
+      position: absolute;
+      bottom: 24px;
+      color: #d1d7e0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: center;
+      max-width: 80vw;
+      background: rgba(10, 12, 16, 0.8);
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0d1117;
+      border: 1px solid var(--cyan);
+      color: #f0f6fc;
+      padding: 0.75rem 1.2rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      box-shadow: 0 0 20px var(--cyan-glow);
+      display: none;
+      z-index: 10000;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 4.5rem 0 3rem;
+      margin-top: 6rem;
+      background: #050608;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    @media (max-width: 800px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-col li {
+      margin-bottom: 0.6rem;
+    }
+
+    .footer-col a:hover {
+      color: var(--cyan);
+    }
+
+    .copy-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      padding-top: 1.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    @media (max-width: 700px) {
+      .copy-banner {
+        flex-direction: column;
+        gap: 0.6rem;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Mudit Atrey</h1>
-        <p>Portfolio & project writeups coming soon.</p>
-        
-        <div class="links">
-            <a href="mailto:muditatrey.work@gmail.com" class="link-item" aria-label="Email">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                </svg>
-                Email
-            </a>
-            
-            <a href="https://linkedin.com/in/mudit-atrey-392a28322" class="link-item" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-                LinkedIn
-            </a>
-            
-            <a href="https://github.com/muditatrey" class="link-item" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                GitHub
-            </a>
-        </div>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="container nav-inner">
+      <a href="#" class="brand">
+        <span class="brand-dot"></span>
+        <span>Mudit Atrey</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#research">Aerodynamics</a>
+        <a href="#defense">Precision Guidance</a>
+        <a href="#systems">Systems</a>
+        <a href="#gallery">4K Dossier</a>
+        <a href="#downloads" class="btn-nav">Download CV</a>
+      </nav>
     </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="status-pill">
+        <span>●</span> AVAILABLE FOR FULL-TIME / REMOTE ROLES &bull; COLLEGE NOC ON REQUEST
+      </div>
+      <h1 class="hero-title">
+        Scientific Computing, ML & <span class="highlight">Autonomous Systems.</span>
+      </h1>
+      <p class="hero-subtitle">
+        First-author aerospace researcher (Elsevier AST, IF 6.4, Q1) and Team Leader for Smart India Hackathon 2026 (Ministry of Defence). Engineering physics-regularized surrogate manifolds, 7-DOF artillery guidance, and high-performance simulation software.
+      </p>
+
+      <div class="hero-actions">
+        <a href="assets/docs/Mudit_Atrey_Startup_CV.pdf" download class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Robotics & Defense CV (PDF)
+        </a>
+        <a href="assets/docs/Mudit_Atrey_F1_Placement_CV.pdf" download class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Formula 1 Placement CV (PDF)
+        </a>
+        <a href="assets/docs/Mudit_Atrey_Elsevier_AST_Preprint.pdf" download class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Read Paper Preprint (PDF)
+        </a>
+        <a href="https://doi.org/10.5281/zenodo.22893593" target="_blank" class="btn btn-secondary">
+          <span>Zenodo DOI</span>
+        </a>
+      </div>
+
+      <!-- Key Metrics Strip -->
+      <div class="metrics-bar">
+        <div class="metric-item">
+          <div class="metric-val">50,000+</div>
+          <div class="metric-label">VLM MDO Solver Calls</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-val">&gt;80%</div>
+          <div class="metric-label">Solver Call Reduction (Active ML)</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-val">2.34m</div>
+          <div class="metric-label">Simulated CEP @ 20km Arc</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-val">16-State</div>
+          <div class="metric-label">EKF IMU/GNSS Sensor Fusion</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-val">5 Merged</div>
+          <div class="metric-label">scikit-learn Ecosystem PRs</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: RESEARCH & AERODYNAMICS -->
+    <section id="research">
+      <div class="section-head">
+        <div class="section-tag">Flagship Peer-Reviewed Research</div>
+        <h2 class="section-title">Tailless BWB UAV: Surrogate-Assisted MDO & 3D RANS CFD</h2>
+      </div>
+
+      <div class="project-card">
+        <div class="card-grid">
+          <div class="card-content">
+            <div>
+              <span class="project-badge">Elsevier AST &bull; IF 6.4 &bull; Q1 Quartile</span>
+              <h3 class="card-title">Physics-Regularized Geometric Manifolds for Tailless Blended Wing Body UAVs</h3>
+              <p class="card-desc">
+                First-author manuscript under external peer review at <em>Aerospace Science and Technology</em> (Manuscript ID: AESCTE-D-26-06017; Zenodo Preprint DOI: 10.5281/zenodo.22893593). Formulates an active-learning surrogate pipeline that eliminates numerical solver exploitation in autonomous flying wings.
+              </p>
+              <ul class="specs-list">
+                <li><strong>Geometric Manifold:</strong> C1-continuous Hermite parametric kernel with active-learning 5-MLP surrogate ensemble and dynamic mass-centroid balancing.</li>
+                <li><strong>Efficiency:</strong> Slashed solver evaluations by &gt;80% across 50,000+ VLM iterations compared to Latin Hypercube Sampling.</li>
+                <li><strong>3D RANS Cross-Validation:</strong> SimScale incompressible RANS validated against SU2 (Spalart-Allmaras), isolating winglet root pressure concentrations and 124% parasite drag rise (CD0 = 0.0242) over low-fidelity strip polars.</li>
+                <li><strong>Watertight B-Rep Solid Kernel:</strong> Custom OpenCASCADE pipeline eliminating micro-gaps and zero-thickness edges for automated CFD meshing.</li>
+              </ul>
+            </div>
+            <div class="hero-actions" style="margin-bottom: 0;">
+              <a href="assets/docs/Mudit_Atrey_Elsevier_AST_Preprint.pdf" download class="btn btn-primary" style="padding: 0.55rem 1rem; font-size: 0.82rem;">Download Paper (PDF)</a>
+              <button onclick="copyBibtex()" class="btn btn-secondary" style="padding: 0.55rem 1rem; font-size: 0.82rem;">Copy BibTeX</button>
+            </div>
+          </div>
+          <div class="card-media" onclick="openLightbox('assets/images/bwb_hero_desert.jpg', 'Tailless BWB UAV in Desert Flight: Pareto Champion Airframe (4K Render)')">
+            <img src="assets/images/bwb_hero_desert.jpg" alt="Tailless BWB UAV Desert Hero" loading="lazy">
+            <span class="zoom-hint">🔍 Click for 4K Zoom</span>
+          </div>
+        </div>
+
+        <div class="media-strip">
+          <div class="strip-thumb" onclick="openLightbox('assets/images/bwb_mountain_flight.jpg', 'High-Altitude Banked Turn Flight')">
+            <img src="assets/images/bwb_mountain_flight.jpg" alt="Mountain flight" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/bwb_cutaway_iso.jpg', 'Internal Packaging & Structural Carbon Rib Cutaway')">
+            <img src="assets/images/bwb_cutaway_iso.jpg" alt="Internal cutaway" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/bwb_cfd_pressure_top.jpg', 'SimScale 3D RANS Pressure Distribution')">
+            <img src="assets/images/bwb_cfd_pressure_top.jpg" alt="CFD pressure" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/bwb_pareto_front.png', 'Pareto-Optimal Front: Range vs Volume')">
+            <img src="assets/images/bwb_pareto_front.png" alt="Pareto front" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/bwb_catapult_launch.jpg', 'Autonomous Pneumatic Catapult Launch')">
+            <img src="assets/images/bwb_catapult_launch.jpg" alt="Catapult launch" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/bwb_structural_test.jpg', 'Structural Rib Deflection Load Test')">
+            <img src="assets/images/bwb_structural_test.jpg" alt="Structural test" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: DEFENSE & PRECISION GUIDANCE -->
+    <section id="defense">
+      <div class="section-head">
+        <div class="section-tag tag-defense">Ministry of Defence &bull; Smart India Hackathon 2026</div>
+        <h2 class="section-title">Project Claymore: 155mm Precision Guided Artillery Fuze Kit</h2>
+      </div>
+
+      <div class="project-card">
+        <div class="card-grid">
+          <div class="card-content">
+            <div>
+              <span class="project-badge badge-defense">SIH26098 &bull; Team Narach Dynamics Lead</span>
+              <h3 class="card-title">Closed-Loop 7-DOF Trajectory Guidance & 16-State Sensor Fusion</h3>
+              <p class="card-desc">
+                Engineered an indigenous guidance kit transforming unguided 155mm artillery shells into precision strike munitions, achieving &le; 30m CEP specification at a fraction of the cost of imported M1156 PGK units.
+              </p>
+              <ul class="specs-list defense-list">
+                <li><strong>7-DOF Flight Dynamics:</strong> Modeled coupled rigid-body aerodynamics with roll-isolated despin collar (7th DOF), cutting spin from 300 rps to &lt; 5 rps.</li>
+                <li><strong>Guidance Law:</strong> Augmented Proportional Navigation (APN) steering titanium canards via closed-loop control, reaching simulated 2.34m CEP over 20km+ ballistic trajectories.</li>
+                <li><strong>Electronic Warfare Resilience:</strong> 16-state Extended Kalman Filter (EKF) maintaining trajectory estimation during 25-second GNSS denial / jamming events with 500Hz IMU dead-reckoning.</li>
+                <li><strong>CAD & Mechanism:</strong> Engineered in Onshape CAD with dual angular contact bearings, hermetic slip-rings, and NATO 2-inch-12UNS fuze thread standard.</li>
+              </ul>
+            </div>
+            <div class="hero-actions" style="margin-bottom: 0;">
+              <a href="#downloads" class="btn btn-secondary" style="padding: 0.55rem 1rem; font-size: 0.82rem;">View Technical Specs</a>
+            </div>
+          </div>
+          <div class="card-media" onclick="openLightbox('assets/images/fuze_hero_round.png', 'Full 155mm Artillery Shell with Precision Guidance Kit (KeyShot Studio Render)')">
+            <img src="assets/images/fuze_hero_round.png" alt="155mm Precision Round Hero" loading="lazy">
+            <span class="zoom-hint">🔍 Click for 4K Zoom</span>
+          </div>
+        </div>
+
+        <div class="media-strip">
+          <div class="strip-thumb" onclick="openLightbox('assets/images/fuze_titanium_canards.png', 'Titanium Cruciform Canards & Steering Head')">
+            <img src="assets/images/fuze_titanium_canards.png" alt="Titanium Canards" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/fuze_despin_bearing_macro.png', 'Passive Despin Collar & Angular Contact Bearing Macro')">
+            <img src="assets/images/fuze_despin_bearing_macro.png" alt="Bearing Macro" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/fuze_avionics_cutaway.png', 'Internal Avionics & Alternator Packaging Cutaway')">
+            <img src="assets/images/fuze_avionics_cutaway.png" alt="Avionics Cutaway" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/fuze_monte_carlo_dispersion.png', '1,000-Shot Monte Carlo Dispersion Reduction Footprint')">
+            <img src="assets/images/fuze_monte_carlo_dispersion.png" alt="Monte Carlo Dispersion" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/fuze_gnss_jamming_telemetry.png', 'GNSS Denial Telemetry with 16-State EKF Fusion')">
+            <img src="assets/images/fuze_gnss_jamming_telemetry.png" alt="GNSS Jamming Telemetry" loading="lazy">
+          </div>
+          <div class="strip-thumb" onclick="openLightbox('assets/images/fuze_trajectory_comparison.png', 'Ballistic vs Corrected Trajectory Arc Comparison')">
+            <img src="assets/images/fuze_trajectory_comparison.png" alt="Trajectory Comparison" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: SYSTEMS, OPEN SOURCE & INFRASTRUCTURE -->
+    <section id="systems">
+      <div class="section-head">
+        <div class="section-tag tag-systems">Production Software & Core Engineering</div>
+        <h2 class="section-title">Systems Architecture & Open Source</h2>
+      </div>
+
+      <div class="sub-grid">
+        <!-- Pradite -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">Production Architecture</span>
+            <h3>Pradite (pradite.com)</h3>
+            <p>
+              Founder & Technical Lead of zero-knowledge BYOK AI platform. Engineered client-side XChaCha20-Poly1305 + Argon2id encryption core, sub-5ms encrypted IndexedDB search, and dynamic routing across 17 runtimes (vLLM, Ollama). Class 42 trademark registered.
+            </p>
+          </div>
+          <div class="tag-row">
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">libsodium</span>
+            <span class="tech-tag">WebAssembly</span>
+            <span class="tech-tag">Zero-Knowledge</span>
+          </div>
+        </div>
+
+        <!-- scikit-learn PRs -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">Open Source Ecosystem</span>
+            <h3>scikit-learn (`skrub` & `skore`)</h3>
+            <p>
+              5 merged PRs reviewed by core maintainers. Eliminated eager evaluation of Polars lazyframes in skrub, built multi-metric explainability display aggregators for tree/linear models, and resolved figure-level legend export persistence in skore.
+            </p>
+          </div>
+          <div class="tag-row">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">Polars</span>
+            <span class="tech-tag">scikit-learn</span>
+            <span class="tech-tag">API Design</span>
+          </div>
+        </div>
+
+        <!-- onshape-mcp -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">CAD Automation</span>
+            <h3>Agentic Parametric CAD (onshape-mcp)</h3>
+            <p>
+              Architected programmatic 3D CAD engine connecting LLMs to Onshape via REST API. Bidirectional geometric feature tree tracking, topological constraint enforcement, and programmatic solid generation.
+            </p>
+          </div>
+          <div class="tag-row">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">Onshape REST API</span>
+            <span class="tech-tag">MCP</span>
+            <span class="tech-tag">Parametric 3D</span>
+          </div>
+        </div>
+
+        <!-- FastF1 Telemetry -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">Telemetry Science</span>
+            <h3>FastF1 Telemetry & Race Pace Analytics</h3>
+            <p>
+              High-rate GPS telemetry and timing sector analysis. Modeled corner apex velocity decay, tire degradation curves across stints, and optimal delta lap pacing across Formula 1 championship sessions.
+            </p>
+          </div>
+          <div class="tag-row">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">FastF1</span>
+            <span class="tech-tag">Signal Processing</span>
+            <span class="tech-tag">Telemetry</span>
+          </div>
+        </div>
+
+        <!-- Cartpole WebGPU -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">Compute & Simulation</span>
+            <h3>WebGPU Cartpole Reinforcement Learning</h3>
+            <p>
+              Engineered browser-native physics engine and deep Q-learning model running fully on GPU hardware using WebGPU shaders. Zero server round-trips with 60 FPS real-time physical animation.
+            </p>
+          </div>
+          <div class="tag-row">
+            <span class="tech-tag">WebGPU</span>
+            <span class="tech-tag">JavaScript</span>
+            <span class="tech-tag">WGSL</span>
+            <span class="tech-tag">Reinforcement Learning</span>
+          </div>
+        </div>
+
+        <!-- Rust Chess Engine -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">High Performance</span>
+            <h3>Bitboard Chess Engine in Rust</h3>
+            <p>
+              Developed bitboard-accelerated move generation engine in Rust with alpha-beta pruning, quiescence search, and transposition tables evaluating >1.2M nodes/sec on single core.
+            </p>
+          </div>
+          <div class="tag-row">
+            <span class="tech-tag">Rust</span>
+            <span class="tech-tag">Bitboards</span>
+            <span class="tech-tag">Systems Programming</span>
+            <span class="tech-tag">Algorithms</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: THE 4K ENGINEERING VISUAL DOSSIER -->
+    <section id="gallery">
+      <div class="section-head">
+        <div class="section-tag">High-Resolution CAD & Telemetry Suite</div>
+        <h2 class="section-title">Visual Dossier: 4K Renders, CFD & Telemetry</h2>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="gallery-filter-bar">
+        <button class="filter-btn active" onclick="filterGallery('all', this)">All Evidence (18)</button>
+        <button class="filter-btn" onclick="filterGallery('aero', this)">Aerodynamics & CFD</button>
+        <button class="filter-btn" onclick="filterGallery('defense', this)">155mm Precision Munitions</button>
+        <button class="filter-btn" onclick="filterGallery('mechanisms', this)">Mechanisms & CAD</button>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- 1 -->
+        <div class="gallery-item" data-cat="aero" onclick="openLightbox('assets/images/bwb_hero_desert.jpg', 'Tailless BWB UAV in Low-Altitude Desert Flight: Pareto Champion Airframe (4K KeyShot)')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_hero_desert.jpg" alt="BWB Hero Desert" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag">Aerodynamics</span>
+            <div class="item-title">BWB UAV Desert Flight: Pareto Airframe</div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="gallery-item" data-cat="defense" onclick="openLightbox('assets/images/fuze_hero_round.png', '155mm Precision Guided Artillery Round with Canard Guidance Kit (KeyShot Studio)')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_hero_round.png" alt="155mm Shell Hero" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--orange);">Munitions</span>
+            <div class="item-title">155mm Precision Shell with Guidance Kit</div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="gallery-item" data-cat="defense" onclick="openLightbox('assets/images/fuze_titanium_canards.png', 'Titanium Cruciform Canards & Independent Steering Actuation Head')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_titanium_canards.png" alt="Titanium Canards" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--orange);">Guidance</span>
+            <div class="item-title">Titanium Canards & Steering Head</div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/fuze_despin_bearing_macro.png', 'Passive Despin Collar with Dual Angular Contact Bearings (Macro)')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_despin_bearing_macro.png" alt="Despin Bearing" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">Mechanism</span>
+            <div class="item-title">Despin Collar & Angular Contact Bearing</div>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="gallery-item" data-cat="aero" onclick="openLightbox('assets/images/bwb_mountain_flight.jpg', 'High-Altitude Banked Turn Flight over Alpine Terrain (4K Render)')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_mountain_flight.jpg" alt="Mountain Flight" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag">Aerodynamics</span>
+            <div class="item-title">High-Altitude Banked Turn Simulation</div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="gallery-item" data-cat="aero" onclick="openLightbox('assets/images/bwb_cfd_pressure_top.jpg', 'SimScale 3D RANS Static Pressure Distribution on Planform')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_cfd_pressure_top.jpg" alt="CFD Top" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag">CFD Analysis</span>
+            <div class="item-title">SimScale 3D RANS Pressure Distribution</div>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/bwb_cutaway_iso.jpg', 'Internal Carbon Spars, Packaging & Battery Distribution Cutaway')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_cutaway_iso.jpg" alt="BWB Cutaway Iso" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">Structures</span>
+            <div class="item-title">Internal Carbon Spars & Packaging</div>
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/fuze_avionics_cutaway.png', 'Internal Avionics, Alternator & Hermetic Slip-Ring Packaging')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_avionics_cutaway.png" alt="Avionics Cutaway" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">Packaging</span>
+            <div class="item-title">Avionics & Alternator Packaging Cutaway</div>
+          </div>
+        </div>
+
+        <!-- 9 -->
+        <div class="gallery-item" data-cat="defense" onclick="openLightbox('assets/images/fuze_monte_carlo_dispersion.png', '1,000-Shot Monte Carlo Trajectory Dispersion Reduction Footprint')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_monte_carlo_dispersion.png" alt="Monte Carlo" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--orange);">Validation</span>
+            <div class="item-title">1,000-Shot Monte Carlo Dispersion</div>
+          </div>
+        </div>
+
+        <!-- 10 -->
+        <div class="gallery-item" data-cat="defense" onclick="openLightbox('assets/images/fuze_gnss_jamming_telemetry.png', 'Electronic Warfare Resilience: 25-Second GNSS Denial Trajectory Telemetry')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_gnss_jamming_telemetry.png" alt="GNSS Jamming Telemetry" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--orange);">State Estimation</span>
+            <div class="item-title">GNSS Denial Telemetry (16-State EKF)</div>
+          </div>
+        </div>
+
+        <!-- 11 -->
+        <div class="gallery-item" data-cat="aero" onclick="openLightbox('assets/images/bwb_pareto_front.png', 'Multi-Objective Pareto Front: Aerodynamic Range vs Internal Volume')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_pareto_front.png" alt="Pareto Front" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag">MDO Research</span>
+            <div class="item-title">Pareto Front: Glide Ratio vs Volume</div>
+          </div>
+        </div>
+
+        <!-- 12 -->
+        <div class="gallery-item" data-cat="aero" onclick="openLightbox('assets/images/bwb_geometric_manifold.png', 'C1-Continuous Hermite Parametric Geometric Kernel')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_geometric_manifold.png" alt="Geometric Manifold" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag">Geometry Kernel</span>
+            <div class="item-title">C1 Hermite Geometric Kernel</div>
+          </div>
+        </div>
+
+        <!-- 13 -->
+        <div class="gallery-item" data-cat="aero" onclick="openLightbox('assets/images/bwb_catapult_launch.jpg', 'Pneumatic Catapult Launch Dynamics: Accelerating into Flight')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_catapult_launch.jpg" alt="Catapult Launch" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag">Flight Dynamics</span>
+            <div class="item-title">Pneumatic Catapult Launch Dynamics</div>
+          </div>
+        </div>
+
+        <!-- 14 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/bwb_exploded_assembly.jpg', 'Modular Airframe Assembly: Toolless Quick-Swap Wing & Bay Architecture')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_exploded_assembly.jpg" alt="Exploded Assembly" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">Hardware</span>
+            <div class="item-title">Toolless Quick-Swap Airframe Assembly</div>
+          </div>
+        </div>
+
+        <!-- 15 -->
+        <div class="gallery-item" data-cat="defense" onclick="openLightbox('assets/images/fuze_trajectory_comparison.png', '7-DOF Ballistic vs Corrected Trajectory Arc with APN Guidance')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_trajectory_comparison.png" alt="Trajectory Arc" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--orange);">Guidance Law</span>
+            <div class="item-title">Ballistic vs Corrected Trajectory Arc</div>
+          </div>
+        </div>
+
+        <!-- 16 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/fuze_cad_assembly_iso.png', 'Onshape CAD 3D Solid Model: Fuze Assembly & Thread Interface')">
+          <div class="gallery-thumb"><img src="assets/images/fuze_cad_assembly_iso.png" alt="CAD Assembly" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">CAD Solid</span>
+            <div class="item-title">Onshape CAD Fuze Solid Assembly</div>
+          </div>
+        </div>
+
+        <!-- 17 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/bwb_structural_test.jpg', 'FEA Carbon Spar Deflection and Structural Load Verification')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_structural_test.jpg" alt="Structural Test" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">Structural FEA</span>
+            <div class="item-title">Carbon Spar Load Deflection Test</div>
+          </div>
+        </div>
+
+        <!-- 18 -->
+        <div class="gallery-item" data-cat="mechanisms" onclick="openLightbox('assets/images/bwb_transit_case.jpg', 'Ruggedized Tactical Field Transit Case Packaging')">
+          <div class="gallery-thumb"><img src="assets/images/bwb_transit_case.jpg" alt="Transit Case" loading="lazy"></div>
+          <div class="gallery-meta">
+            <span class="item-tag" style="color: var(--emerald);">Packaging</span>
+            <div class="item-title">Tactical Field Transit Case Packaging</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: DOWNLOADS & CREDENTIALS -->
+    <section id="downloads" style="padding-top: 1rem;">
+      <div class="section-head">
+        <div class="section-tag">Verification & Official Documents</div>
+        <h2 class="section-title">Official Curricula Vitae & Manuscripts</h2>
+      </div>
+
+      <div class="sub-grid">
+        <!-- Startup CV -->
+        <div class="sub-card" style="border-color: rgba(0, 229, 255, 0.35);">
+          <div>
+            <span class="project-badge">Immediate Availability</span>
+            <h3>Robotics, Defense & Autonomous Systems CV</h3>
+            <p>
+              Tailored for full-time on-site or remote engineering roles (NewSpace Research, ideaForge, Tonbo Imaging). Highlights 6-DOF/7-DOF guidance, 16-state EKF sensor fusion, and BWB aerodynamic MDO. College NOC available on request; end-semester exams only.
+            </p>
+          </div>
+          <a href="assets/docs/Mudit_Atrey_Startup_CV.pdf" download class="btn btn-primary" style="margin-top: 1rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Robotics CV (1-Page PDF)
+          </a>
+        </div>
+
+        <!-- F1 CV -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">Industrial Placement 2027</span>
+            <h3>Formula 1 & Overseas Placement CV</h3>
+            <p>
+              Tailored for Formula 1 industrial placements and European research institutions. Leads with aerodynamic MDO, 3D RANS CFD cross-validation (SimScale vs SU2), and high-rate telemetry data science.
+            </p>
+          </div>
+          <a href="assets/docs/Mudit_Atrey_F1_Placement_CV.pdf" download class="btn btn-secondary" style="margin-top: 1rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download F1 Placement CV (1-Page PDF)
+          </a>
+        </div>
+
+        <!-- Research Paper PDF -->
+        <div class="sub-card">
+          <div>
+            <span class="project-badge">Elsevier AST Preprint</span>
+            <h3>Full Research Manuscript (36 Pages)</h3>
+            <p>
+              Complete peer-reviewed manuscript submission: "Physics-Regularized Geometric Manifolds for Surrogate-Assisted MDO of Tailless Blended-Wing-Body UAVs" with all 9 figures, convergence metrics, and drag tables.
+            </p>
+          </div>
+          <a href="assets/docs/Mudit_Atrey_Elsevier_AST_Preprint.pdf" download class="btn btn-secondary" style="margin-top: 1rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Download Manuscript (PDF)
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Lightbox Modal for 4K Zoom -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+    <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="Zoomed View">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">BibTeX citation copied to clipboard!</div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Mudit Atrey</h4>
+          <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 380px; line-height: 1.6;">
+            Undergraduate in Computer Science & Engineering (AI/ML) at Kanpur Institute of Technology, AKTU. Formulating aerospace simulations, state estimators, and production systems.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#research">Aerodynamic MDO</a></li>
+            <li><a href="#defense">155mm Fuze Guidance</a></li>
+            <li><a href="#systems">Software & Systems</a></li>
+            <li><a href="#gallery">4K Visual Dossier</a></li>
+            <li><a href="#downloads">Download Curricula Vitae</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Direct Contact</h4>
+          <ul>
+            <li><a href="mailto:muditatrey.work@gmail.com">muditatrey.work@gmail.com</a></li>
+            <li><a href="tel:+917483300336">+91 7483300336</a></li>
+            <li><a href="https://github.com/MuditAtrey" target="_blank">github.com/MuditAtrey</a></li>
+            <li><a href="https://linkedin.com/in/mudit-atrey-392a28322" target="_blank">LinkedIn Profile</a></li>
+            <li><span>Kanpur, UP, India</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="copy-banner">
+        <span>&copy; 2026 Mudit Atrey. All technical evidence, CAD geometry, and telemetry reproduced from verified repositories.</span>
+        <span>Hosted via Cloudflare Pages &bull; atrey.app</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Logic -->
+  <script>
+    function openLightbox(src, caption) {
+      const lb = document.getElementById("lightbox");
+      const img = document.getElementById("lightbox-img");
+      const cap = document.getElementById("lightbox-caption");
+      img.src = src;
+      cap.textContent = caption || "";
+      lb.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox(e) {
+      if (!e || e.target.id === "lightbox" || e.target.classList.contains("lightbox-close")) {
+        const lb = document.getElementById("lightbox");
+        lb.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const lb = document.getElementById("lightbox");
+        lb.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+    });
+
+    function filterGallery(category, btn) {
+      const items = document.querySelectorAll(".gallery-item");
+      const buttons = document.querySelectorAll(".filter-btn");
+
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      items.forEach(item => {
+        if (category === "all" || item.getAttribute("data-cat") === category) {
+          item.style.display = "flex";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    }
+
+    function copyBibtex() {
+      const bib = `@article{atrey2026bwb,
+  title={Physics-Regularized Geometric Manifolds for Surrogate-Assisted MDO of Tailless BWB UAVs},
+  author={Atrey, Mudit},
+  journal={Aerospace Science and Technology (under review)},
+  year={2026},
+  doi={10.5281/zenodo.22893593}
+}`;
+      navigator.clipboard.writeText(bib).then(() => {
+        showToast("BibTeX citation copied to clipboard!");
+      }).catch(() => {
+        showToast("Citation copied!");
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+  </script>
 </body>
 </html>
