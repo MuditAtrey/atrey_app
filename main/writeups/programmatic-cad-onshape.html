@@ -213,8 +213,11 @@
     </figure>
 
     <h2>2. Architecture of onshape-mcp: Model Context Protocol for CAD</h2>
+    <p style="background: var(--bg-subtle); border-left: 3px solid var(--accent-color); padding: 0.75rem 1rem; font-size: 0.88rem; margin: 1.25rem 0; font-family: var(--font-sans);">
+      <strong>Release Status:</strong> The <code>onshape-mcp</code> server is currently an internal engineering harness and will remain closed source until further validation, API credential security audits, and multi-user stress testing are completed.
+    </p>
     <p>
-      To connect large language models with production CAD kernels, we developed <code>onshape-mcp</code>, a Model Context Protocol server that bridges AI agents directly to the Onshape cloud REST API and Parasolid modeling engine.
+      To connect large language models with production CAD kernels, I developed <code>onshape-mcp</code>, a Model Context Protocol server that bridges AI agents directly to the Onshape cloud REST API and Parasolid modeling engine.
     </p>
     <p>
       Instead of prompting an LLM to hallucinate thousands of 3D point coordinates in text, <code>onshape-mcp</code> exposes structured operational primitives backed by schema validation:
@@ -324,6 +327,25 @@ export const aeroLoftGuard = defineFeature(function(context is Context, id is Id
     <p>
       In autonomous flight vehicle design, aerodynamic lofting and internal structural packaging are deeply coupled. An aerodynamically optimal loft is useless if the internal cavities cannot accommodate the required battery cells or payload volume.
     </p>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/onshape_pl40_catapult_iso.png" alt="Pneumatic Launch Rail Assembly in Onshape" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 3.</strong> Complex mechanical assembly generated programmatically via the Onshape API: the PL-40 pneumatic catapult launcher showing mated structural extrusion rails, tensioner carriage, and tripod stand geometry.
+      </figcaption>
+    </figure>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/onshape_drone_top.png" alt="Onshape Parametric Planform Top View" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 4.</strong> Planform projection generated in Onshape PartStudio verifying symmetric chord lofting, elevon hinge line offsets, and zero-thickness trailing edge elimination.
+      </figcaption>
+    </figure>
+
     <p>
       Through <code>onshape-mcp</code>, the optimization engine queries the exact mass and inertia tensor via <code>/api/v6/partstudios/.../massproperties</code> after every geometry mutation:
     </p>
@@ -364,9 +386,12 @@ export const aeroLoftGuard = defineFeature(function(context is Context, id is Id
       <li><strong>Feature Rollback:</strong> If a downstream boolean cut fails, the agent issues a rollback command to the preceding valid feature ID, preventing tree corruption.</li>
     </ul>
 
-    <h2>6. Conclusion</h2>
+    <h2>6. Conclusion &amp; Availability</h2>
     <p>
       The future of AI in mechanical and aerospace engineering will not be built on text-to-mesh generators. Engineering requires deterministic, inspectable, and manufacturing-ready geometry. By interfacing language models with cloud B-Rep kernels through structured protocols like MCP, software agents can construct real mechanical mechanisms that transition directly from computation to CNC fabrication.
+    </p>
+    <p>
+      The <code>onshape-mcp</code> server remains closed source while undergoing continued reliability testing, regression hardening, and geometry validation across new vehicle configurations. Access will remain restricted until further testing and safety sandboxing are complete.
     </p>
   </main>
 
