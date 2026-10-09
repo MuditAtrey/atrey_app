@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pruning Eager Evaluations in Lazy Dataframe Pipelines | Mudit Atrey</title>
+  <meta name="description" content="Technical engineering note on preserving Polars LazyFrame query graphs in scikit-learn tabular pipelines and fixing export serialization in skore.">
+  <link rel="canonical" href="https://atrey.app/writeups/pruning-eager-evaluations-lazyframes">
+
+  <style>
+    :root {
+      --bg-color: #FDFCF9;
+      --bg-subtle: #F6F5F1;
+      --text-color: #111111;
+      --accent-color: #555555;
+      --dim-color: #777777;
+      --border-color: #E2DFD2;
+      --link-color: #1B365D;
+      --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      padding: 3rem 1.5rem 6rem;
+      max-width: 780px;
+      margin: 0 auto;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      margin-bottom: 2.8rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .back-link {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--accent-color);
+    }
+    .back-link:hover { color: var(--text-color); text-decoration: underline; }
+
+    .article-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4.5vw, 2.7rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+    .article-meta {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--dim-color);
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      margin: 2.4rem 0 0.8rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    h3 {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 1.6rem 0 0.5rem;
+    }
+    p { margin-bottom: 1.25rem; color: var(--text-color); }
+    ul, ol { margin: 1rem 0 1.4rem 1.5rem; }
+    li { margin-bottom: 0.55rem; }
+
+    .code-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      padding: 0.95rem 1.15rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      margin: 1.2rem 0 1.6rem;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--bg-subtle);
+      padding: 0.15em 0.35em;
+      border: 1px solid var(--border-color);
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: none;
+    }
+
+    .pr-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .pr-table th, .pr-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    .pr-table th {
+      background: var(--bg-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pr-table a {
+      color: var(--link-color);
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 4.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      color: var(--dim-color);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">&larr; Back to atrey.app</a>
+    <h1 class="article-title">Pruning Eager Evaluations in Lazy Dataframe Pipelines</h1>
+    <div class="article-meta">
+      Published July 2026 &bull; Mudit Atrey &bull; Systems & Data Engineering
+    </div>
+  </header>
+
+  <main>
+    <p>
+      In modern tabular machine learning, libraries like Polars have shifted dataframe operations from eager in-memory materialization to lazy evaluation graphs. A <code>LazyFrame</code> constructs an abstract syntax tree of transformations, allowing the query engine to apply predicate pushdown, projection pushdown, and streaming execution prior to memory allocation.
+    </p>
+    <p>
+      However, when wrapping these structures into higher-level feature engineering pipelines (such as <code>skrub</code> in the scikit-learn ecosystem), defensive input validation can silently dismantle these performance guarantees. Below is a retrospective on 5 merged pull requests across <code>skrub</code> and <code>skore</code> resolving lazy evaluation bottlenecks and display serialization.
+    </p>
+
+    <h2>1. The Eager Evaluation Bottleneck in CheckInput</h2>
+    <p>
+      In <code>skrub</code>, estimators validate tabular inputs via internal checks to verify column types, categorical cardinalities, and missing values. During initial Polars integration, early validation logic performed inspection routines that triggered eager collection of the entire <code>LazyFrame</code> into memory:
+    </p>
+
+    <div class="code-box">
+<pre><code># Anti-pattern: Eager collection destroys lazy execution graphs
+def check_input(X):
+    if hasattr(X, "collect"):
+        df = X.collect()  # Forces full memory materialization
+        validate_schema(df.schema)
+        return df</code></pre>
+    </div>
+
+    <p>
+      When dealing with multi-gigabyte tabular datasets, this eager evaluation forced immediate heap allocation, neutralizing streaming chunk execution and defeating the exact reason users adopted Polars.
+    </p>
+    <p>
+      In <a href="https://github.com/skrub-data/skrub/pull/1941" target="_blank" rel="noopener noreferrer">PR #1941</a>, I refactored the <code>CheckInput</code> pipeline to inspect schema metadata natively using lazy schema resolution (<code>X.collect_schema()</code> / <code>X.schema</code>) without collecting data buffers. This kept the query execution graph unmaterialized until downstream fit/transform passes explicitly requested execution.
+    </p>
+
+    <h2>2. Model Explainability and Display Enhancements in skore</h2>
+    <p>
+      <code>skore</code> is probabl-ai's library for machine learning evaluation, tracking, and diagnostics built on top of scikit-learn. Model explainability displays like <code>ImpurityDecreaseDisplay</code> and <code>CoefficientsDisplay</code> calculate feature importances across ensemble estimators.
+    </p>
+    <p>
+      For multi-output estimators and complex gradient-boosted trees, raw impurity decreases or coefficients produce multi-dimensional arrays across estimators. In <a href="https://github.com/probabl-ai/skore/pull/2539" target="_blank" rel="noopener noreferrer">PR #2539</a> and <a href="https://github.com/probabl-ai/skore/pull/2552" target="_blank" rel="noopener noreferrer">PR #2552</a>, I implemented aggregate parameters (such as mean, median, and variance pooling), providing flexible single-plot summaries while preserving underlying per-estimator distributions.
+    </p>
+
+    <h2>3. Matplotlib Figure Legend Export Persistence</h2>
+    <p>
+      In diagnostic reporting, saving interactive diagnostic plots (such as <code>PredictionErrorDisplay</code>) to disk often resulted in clipped or missing external legends depending on the backend used (e.g., Agg vs. inline notebook renderers).
+    </p>
+    <p>
+      In <a href="https://github.com/probabl-ai/skore/pull/2530" target="_blank" rel="noopener noreferrer">PR #2530</a>, I restructured legend bounding box management using <code>bbox_inches="tight"</code> and explicit artist inclusion in <code>extra_artists</code> during figure save routines, ensuring that exported figures retain complete annotations regardless of resolution or canvas aspect ratio.
+    </p>
+
+    <h2>4. Summary of Merged Pull Requests</h2>
+    <p>
+      All contributions were reviewed and merged by core maintainers across the <code>skrub-data</code> and <code>probabl-ai</code> organizations:
+    </p>
+
+    <table class="pr-table">
+      <thead>
+        <tr>
+          <th>Repository</th>
+          <th>PR</th>
+          <th>Title & Core Contribution</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>skrub-data/skrub</td>
+          <td><a href="https://github.com/skrub-data/skrub/pull/1941" target="_blank" rel="noopener noreferrer">#1941</a></td>
+          <td>FIX: Do not collect LazyFrames in CheckInput</td>
+          <td>Merged</td>
+        </tr>
+        <tr>
+          <td>probabl-ai/skore</td>
+          <td><a href="https://github.com/probabl-ai/skore/pull/2530" target="_blank" rel="noopener noreferrer">#2530</a></td>
+          <td>FIX: Ensure figure-level legend is included in PredictionErrorDisplay export</td>
+          <td>Merged</td>
+        </tr>
+        <tr>
+          <td>probabl-ai/skore</td>
+          <td><a href="https://github.com/probabl-ai/skore/pull/2539" target="_blank" rel="noopener noreferrer">#2539</a></td>
+          <td>FEAT: Add aggregate parameter to ImpurityDecreaseDisplay</td>
+          <td>Merged</td>
+        </tr>
+        <tr>
+          <td>probabl-ai/skore</td>
+          <td><a href="https://github.com/probabl-ai/skore/pull/2552" target="_blank" rel="noopener noreferrer">#2552</a></td>
+          <td>FEAT: Add aggregate parameter to CoefficientsDisplay</td>
+          <td>Merged</td>
+        </tr>
+        <tr>
+          <td>skrub-data/skrub</td>
+          <td><a href="https://github.com/skrub-data/skrub/pull/1940" target="_blank" rel="noopener noreferrer">#1940</a></td>
+          <td>DOC: Update gallery examples to load datasets from path</td>
+          <td>Merged</td>
+        </tr>
+        <tr>
+          <td>skrub-data/skrub</td>
+          <td><a href="https://github.com/skrub-data/skrub/pull/1964" target="_blank" rel="noopener noreferrer">#1964</a></td>
+          <td>DOC: Update remaining gallery examples to load datasets from paths</td>
+          <td>Merged</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      You can inspect the complete public verification record directly on GitHub: <a href="https://github.com/search?q=is%3Apr+is%3Amerged+author%3AMuditAtrey&type=pullrequests" target="_blank" rel="noopener noreferrer">GitHub Search: is:pr is:merged author:MuditAtrey</a>.
+    </p>
+  </main>
+
+  <footer>
+    <div>&copy; 2026 Mudit Atrey &bull; atrey.app</div>
+    <div><a href="../index.html">Return to Homepage</a></div>
+  </footer>
+
+</body>
+</html>
