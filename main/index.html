@@ -428,7 +428,7 @@
 
       <div class="publication-card">
         <div class="pub-title">
-          Physics-Regularized Geometric Manifolds for Surrogate-Assisted MDO of Tailless Blended-Wing-Body UAVs
+          Physics-Regularized Geometric Manifolds for Efficient Surrogate-Assisted MDO of Tailless BWB UAVs
         </div>
         <div class="pub-meta">
           <strong>Author:</strong> Mudit Atrey (First & Sole Author)<br>
@@ -560,12 +560,14 @@
     });
 
     function copyBibtex() {
-      const bib = `@article{atrey2026bwb,
-  title={Physics-Regularized Geometric Manifolds for Surrogate-Assisted MDO of Tailless BWB UAVs},
-  author={Atrey, Mudit},
-  journal={Aerospace Science and Technology (under review)},
-  year={2026},
-  doi={10.5281/zenodo.22893593}
+      const bib = `@misc{atrey2026bwb,
+  author    = {Atrey, Mudit},
+  title     = {Physics-Regularized Geometric Manifolds for Efficient Surrogate-Assisted MDO of Tailless BWB UAVs},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22893593},
+  url       = {https://doi.org/10.5281/zenodo.22893593},
+  note      = {Preprint under external peer review at Aerospace Science and Technology (Elsevier)}
 }`;
       navigator.clipboard.writeText(bib).then(() => {
         showToast("BibTeX citation copied to clipboard.");
