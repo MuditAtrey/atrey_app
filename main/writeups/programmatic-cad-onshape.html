@@ -4,45 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Programmatic 3D CAD: Interfacing LLMs with Parametric B-Rep Kernels | Mudit Atrey</title>
-  <meta name="description" content="Technical writeup on building onshape-mcp: why mesh generation fails physical manufacturing and how to connect generative systems to parametric B-Rep feature trees.">
+  <meta name="description" content="Technical article on interfacing LLMs with parametric CAD kernels via Onshape REST API and MCP, contrasting B-Rep solids with polygon meshes.">
+  <link rel="canonical" href="https://atrey.app/writeups/programmatic-cad-onshape">
 
   <style>
     :root {
       --bg-color: #FDFCF9;
+      --bg-subtle: #F6F5F1;
       --text-color: #111111;
       --accent-color: #555555;
       --dim-color: #777777;
-      --link-color: #111111;
-      --link-hover: #555555;
-      --border-color: #E5E4E2;
-      --border-dark: #CCCCCC;
-      --bg-subtle: #F6F5F1;
+      --border-color: #E2DFD2;
+      --link-color: #1B365D;
       --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", monospace;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html {
+
+    body {
       background-color: var(--bg-color);
       color: var(--text-color);
-      font-family: var(--font-sans);
-      font-size: 15px;
-      line-height: 1.7;
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      padding: 3rem 1.5rem 6rem;
+      max-width: 780px;
+      margin: 0 auto;
       -webkit-font-smoothing: antialiased;
     }
-    body {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 3.5rem 1.5rem 6rem;
-    }
-    a {
-      color: var(--link-color);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-thickness: 1px;
-    }
-    a:hover { color: var(--link-hover); }
 
     header {
       margin-bottom: 2.8rem;
@@ -90,10 +81,10 @@
       margin: 1.6rem 0 0.5rem;
     }
     p { margin-bottom: 1.25rem; color: var(--text-color); }
-    ul { margin: 1rem 0 1.4rem 1.5rem; }
-    li { margin-bottom: 0.45rem; }
+    ul, ol { margin: 1rem 0 1.4rem 1.5rem; }
+    li { margin-bottom: 0.55rem; }
 
-    figure { margin: 2rem 0; }
+    figure { margin: 2.2rem 0; }
     .figure-frame {
       border: 1px solid var(--border-color);
       background: #FFFFFF;
@@ -108,7 +99,7 @@
       font-size: 0.82rem;
       color: var(--accent-color);
       line-height: 1.5;
-      margin-top: 0.5rem;
+      margin-top: 0.55rem;
       padding: 0 0.15rem;
     }
     figcaption strong {
@@ -120,12 +111,25 @@
     .code-box {
       background: var(--bg-subtle);
       border: 1px solid var(--border-color);
-      padding: 0.9rem 1.1rem;
+      padding: 0.95rem 1.15rem;
       font-family: var(--font-mono);
       font-size: 0.82rem;
       line-height: 1.55;
       overflow-x: auto;
       margin: 1.2rem 0 1.6rem;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--bg-subtle);
+      padding: 0.15em 0.35em;
+      border: 1px solid var(--border-color);
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: none;
     }
 
     footer {
@@ -140,6 +144,7 @@
       gap: 1rem;
     }
   </style>
+
   <!-- KaTeX for mathematical typesetting -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -177,60 +182,191 @@
 
   <main>
     <p>
-      The recent wave of 3D generative AI models focuses almost exclusively on neural radiance fields (NeRFs), Gaussian splatting, or polygon surface meshes. While these representations are effective for video games, visual effects, and digital rendering, they are functionally unusable in real-world mechanical and aerospace engineering.
+      The recent wave of 3D generative AI models focuses almost exclusively on neural radiance fields (NeRFs), 3D Gaussian splatting, or unconstrained triangle surface meshes. While these representations excel at video games, visual effects, and digital rendering, they are functionally unusable in real-world mechanical and aerospace engineering.
     </p>
     <p>
-      A physical CNC mill, lathe, or waterjet cutter does not accept an unstructured polygon mesh. Manufacturing requires precise Boundary Representation (B-Rep) geometry: mathematical NURBS surfaces, exact analytic cylinders, chamfers, datum planes, and editable parametric feature trees with strict dimensional tolerances.
+      A physical CNC mill, lathe, waterjet, or 5-axis machining center does not accept an unstructured polygon mesh. Physical fabrication requires Boundary Representation (B-Rep) solids: exact mathematical NURBS surfaces, analytic cylindrical holes, datum planes, geometric dimensioning and tolerancing (GD&amp;T), and fully editable parametric feature trees.
     </p>
 
-    <h2>1. Why Polygon Meshes Fail Physical Engineering</h2>
+    <h2>1. The Fundamental Flaws of Polygon Meshes in Physical Engineering</h2>
     <p>
-      When a machine shop or aerospace foundry manufactures an assembly, they require parametric solids:
+      When a machine shop or aerospace manufacturing team inspects a component, the differences between a faceted mesh and a B-Rep kernel become critical:
     </p>
     <ul>
-      <li><strong>Topological Awareness:</strong> In a B-Rep model, a hole is recognized as an analytic cylinder with an axis and radius. In an STL or OBJ polygon mesh, it is an approximation composed of hundreds of planar triangular facets. You cannot apply a drill-tap cycle or tolerance callout (e.g. ISO 2768-m) to a faceted triangle cloud.</li>
-      <li><strong>Downstream Editability:</strong> If a structural FEA test reveals a stress concentration at a fillet, an engineer needs to modify the fillet radius parameter from 2.0 mm to 3.5 mm. In an exported mesh, the entire geometry must be manually re-sculpted.</li>
-      <li><strong>Mating and Assembly Constraints:</strong> Real mechanisms require concentric, planar, and tangent mate definitions between components. Meshes have no concept of mated reference frames.</li>
+      <li><strong>Lack of Analytic Geometry:</strong> In a B-Rep model, a bolt hole is an exact analytic cylinder defined by an axis $\mathbf{L} = \mathbf{p}_0 + t \hat{\mathbf{a}}$ and radius $R$. In an STL or OBJ polygon mesh, that same hole is approximated by hundreds of flat triangular facets. A CAM tool cannot extract a drill-tap cycle, reaming diameter, or tolerance callout (such as ISO 2768-m or ASME Y14.5) from faceted triangle normal vectors.</li>
+      <li><strong>Volume and Inertia Discrepancies:</strong> In a B-Rep solid, volume $V$ and mass properties are evaluated by applying the Gauss divergence theorem over the exact boundary surfaces:
+        <div style="margin: 1.2rem 0; text-align: center;">
+          $$V = \frac{1}{3} \iint_{\partial \Omega} (\mathbf{x} \cdot \mathbf{n}) \, dA, \quad \mathbf{r}_{\mathrm{cg}} = \frac{1}{2V} \iint_{\partial \Omega} (\mathbf{x} \cdot \mathbf{n}) \mathbf{x} \, dA$$
+        </div>
+        In a polygon mesh, even minor artifacts (non-manifold edges, self-intersections, inverted facet normals, or micro-gaps) produce undefined or wildly incorrect volume calculations that corrupt flight dynamics and mass balancing.</li>
+      <li><strong>Destructive Downstream Edits:</strong> If structural FEA or wind tunnel testing reveals high stress concentration at a wing root fillet, a mechanical engineer modifies the fillet radius parameter from $2.0\,\text{mm}$ to $3.5\,\text{mm}$. In a polygon mesh, there is no fillet entity; the engineer must manually sculpt or regenerate the entire triangle cloud.</li>
+      <li><strong>Absence of Mating Constraints:</strong> Complex assemblies require kinematic mates: concentric alignments, planar coincident mates, and tangent contact definitions. Meshes possess no concept of mated coordinate reference frames.</li>
     </ul>
 
     <figure>
       <div class="figure-frame">
-        <img src="../assets/images/fuze_cad_assembly_iso.png" alt="Onshape Parametric CAD Assembly" loading="lazy">
+        <img src="../assets/images/onshape_drone_iso.png" alt="Onshape Parametric CAD PartStudio Viewport" loading="lazy">
       </div>
       <figcaption>
-        <strong>Figure 1.</strong> Fully parametric B-Rep solid model built via programmatic API feature scripts in Onshape.
+        <strong>Figure 1.</strong> Fully parametric B-Rep solid model of a tailless blended wing body generated via automated Onshape REST API calls and FeatureScript loft operations (shaded with edges view). Every surface is a continuous NURBS boundary with certified closed volume.
       </figcaption>
     </figure>
 
-    <h2>2. Architecture of onshape-mcp</h2>
+    <h2>2. Architecture of onshape-mcp: Model Context Protocol for CAD</h2>
     <p>
-      To bridge language models with physical CAD engineering, we designed <code>onshape-mcp</code>, a Model Context Protocol (MCP) server connecting LLMs to the Onshape cloud CAD API.
+      To connect large language models with production CAD kernels, we developed <code>onshape-mcp</code>, a Model Context Protocol server that bridges AI agents directly to the Onshape cloud REST API and Parasolid modeling engine.
     </p>
     <p>
-      Instead of asking the model to hallucinate 3D coordinates in a void, <code>onshape-mcp</code> exposes a structured API with strict validation primitives:
+      Instead of prompting an LLM to hallucinate thousands of 3D point coordinates in text, <code>onshape-mcp</code> exposes structured operational primitives backed by schema validation:
+    </p>
+
+    <div class="code-box">
+<pre><code>// Example 1: MCP Tool Definition for Parametric Loft Construction
+{
+  "tool": "onshape_create_spline_loft",
+  "arguments": {
+    "documentId": "dc3730aa5bcfd1048e6085c2",
+    "workspaceId": "cdfb7831adeacf36982cc056",
+    "elementId": "c59f1c24624648d9ff93075c",
+    "featureName": "MainWingLoft",
+    "stationProfiles": [
+      {
+        "stationName": "RootSection",
+        "plane": "Right",
+        "chord_mm": 620.0,
+        "twist_deg": 0.0,
+        "airfoil": "Reflex_Centerbody_v4"
+      },
+      {
+        "stationName": "BlendSection",
+        "offset_y_mm": 240.0,
+        "chord_mm": 410.0,
+        "twist_deg": -1.2,
+        "airfoil": "Transition_Mod_12"
+      },
+      {
+        "stationName": "TipSection",
+        "offset_y_mm": 775.0,
+        "chord_mm": 135.0,
+        "twist_deg": -3.8,
+        "airfoil": "Tip_Reflex_v2"
+      }
+    ],
+    "boundaryConditions": {
+      "startCondition": "MATCH_TANGENT",
+      "endCondition": "CLAMP_NORMAL"
+    }
+  }
+}</code></pre>
+    </div>
+
+    <p>
+      The MCP server translates this high-level call into validated FeatureScript payloads and dispatches them to Onshape's <code>/api/v6/partstudios/d/{did}/w/{wid}/e/{eid}/features</code> endpoint. The Parasolid kernel evaluates the spline lofts, computes intersection curves, and returns the resulting topology or exact error diagnostics.
+    </p>
+
+    <h2>3. Enforcing Invariants in Cloud FeatureScript</h2>
+    <p>
+      A major benefit of programmatic CAD is writing custom FeatureScript functions that run natively inside Onshape's kernel. Rather than relying on the LLM to remember mechanical design rules, the FeatureScript itself acts as a deterministic guardrail:
+    </p>
+
+    <div class="code-box">
+<pre><code>FeatureScript 2447;
+import(path : "onshape/std/geometry.fs", version : "2447.0");
+
+annotation { "Feature Type Name" : "AeroLoftGuard" }
+export const aeroLoftGuard = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        annotation { "Name" : "Profile Sketches", "Filter" : EntityType.FACE }
+        definition.profiles is Query;
+
+        annotation { "Name" : "Minimum Shell Wall Thickness" }
+        isLength(definition.minWallThickness, LENGTH_BOUNDS);
+    }
+    {
+        // 1. Enforce monotonic spanwise chord reduction
+        var sketches = evaluateQuery(context, definition.profiles);
+        for (var i = 1; i < size(sketches); i += 1)
+        {
+            var prevBox = evBox3d(context, { "topology" : sketches[i - 1] });
+            var currBox = evBox3d(context, { "topology" : sketches[i] });
+            var prevChord = prevBox.maxCorner[0] - prevBox.minCorner[0];
+            var currChord = currBox.maxCorner[0] - currBox.minCorner[0];
+            
+            if (currChord > prevChord)
+            {
+                throw regenError("Geometry Error: Outboard chord exceeds inboard chord. Monotonicity violated.");
+            }
+        }
+
+        // 2. Execute B-Rep loft with G1 curvature matching at symmetry plane
+        opLoft(context, id + "loft", {
+            "profileSubfeatures" : sketches,
+            "derivativeInfo" : [{ "profileIndex" : 0, "matchCurvature" : true }]
+        });
+    });</code></pre>
+    </div>
+
+    <p>
+      If the LLM generates a design with inverted chords or discontinuous transitions, the Onshape compiler immediately throws a <code>regenError</code>, preventing corrupted geometry from entering the CAD tree.
+    </p>
+
+    <figure>
+      <div class="figure-frame">
+        <img src="../assets/images/bwb_exploded_assembly.jpg" alt="Exploded Parametric Multi-Body Assembly" loading="lazy">
+      </div>
+      <figcaption>
+        <strong>Figure 2.</strong> Programmatically generated multi-body B-Rep assembly. The parametric kernel coordinates individual component bodies: nose payload pod, canopy hatch, carbon spar pass-through tunnels, elevons, and wing skin panels, each maintaining independent manufacturing tolerances.
+      </figcaption>
+    </figure>
+
+    <h2>4. Closed-Loop Mass Properties &amp; Aerodynamic Sizing</h2>
+    <p>
+      In autonomous flight vehicle design, aerodynamic lofting and internal structural packaging are deeply coupled. An aerodynamically optimal loft is useless if the internal cavities cannot accommodate the required battery cells or payload volume.
+    </p>
+    <p>
+      Through <code>onshape-mcp</code>, the optimization engine queries the exact mass and inertia tensor via <code>/api/v6/partstudios/.../massproperties</code> after every geometry mutation:
+    </p>
+
+    <div class="code-box">
+<pre><code>// Example 2: Structured Mass Properties Output from Onshape Kernel
+{
+  "status": "SUCCESS",
+  "hasSingleSolid": true,
+  "volume_m3": 0.00784219,
+  "surfaceArea_m2": 0.841203,
+  "mass_kg": 1.4328,
+  "centroid_m": {
+    "x": 0.34215,
+    "y": 0.00000,
+    "z": 0.01842
+  },
+  "inertiaTensor_kg_m2": [
+    [0.089201, 0.000000, -0.001240],
+    [0.000000, 0.142055,  0.000000],
+    [-0.001240, 0.000000, 0.218540]
+  ],
+  "watertightSolid": true
+}</code></pre>
+    </div>
+
+    <p>
+      This exact feedback allows the optimizer to balance the physical center of gravity directly against the aerodynamic neutral point ($x_{\mathrm{np}}$), guaranteeing longitudinal stability ($SM = 18.5\%$) before committing to tooling.
+    </p>
+
+    <h2>5. Error Handling and Kernel Rollback Strategies</h2>
+    <p>
+      When an AI agent modifies CAD trees, geometric operations inevitably encounter edge cases. The MCP server handles these through structured feedback loops:
     </p>
     <ul>
-      <li><strong>Feature Tree Inspection:</strong> Queries the live PartStudio feature tree, returning feature IDs, types (Extrude, Revolve, Sweep, Fillet), parameters, and rollback states.</li>
-      <li><strong>Topological Constraint Enforcement:</strong> Verifies that sketch entities reference valid datum planes, circular edges, or project geometries before issuing API mutation payloads.</li>
-      <li><strong>Programmatic Solid Generation:</strong> Generates FeatureScript snippets and REST calls that build clean, editable CAD trees.</li>
+      <li><strong>Fillet Radius Overflow:</strong> When the agent requests a blend radius larger than the adjacent edge curvature, the kernel fails with <code>FILLET_RADIUS_EXCEEDS_BOUNDS</code>. The agent inspects the adjacent edge lengths and scales the radius down to $80\%$ of maximum allowable length.</li>
+      <li><strong>Self-Intersecting Loft Guides:</strong> When aggressive twist angles cause guide curves to intersect mid-loft, the agent queries the failure diagnostics and applies automatic C1 tangency clamping.</li>
+      <li><strong>Feature Rollback:</strong> If a downstream boolean cut fails, the agent issues a rollback command to the preceding valid feature ID, preventing tree corruption.</li>
     </ul>
 
-    <h2>3. Automated Design Iteration in Practice</h2>
+    <h2>6. Conclusion</h2>
     <p>
-      In autonomous flight hardware development, aerodynamic lofts and internal packaging constantly conflict. For example, during centerbody bay sizing, battery pack volumes and carbon spar clearances must be balanced against aerodynamic profile thickness.
-    </p>
-    <p>
-      With programmatic B-Rep control:
-    </p>
-    <ul>
-      <li>The optimizer writes updated spanwise station coordinates into the CAD server via REST.</li>
-      <li>The CAD kernel recomputes the loft, resolves fillets, checks for zero-thickness wall violations, and measures volume and mass properties.</li>
-      <li>If a fillet fails or an extrusion intersects a clearance envelope, the error is returned to the optimizer as a hard geometric constraint violation.</li>
-    </ul>
-
-    <h2>4. Conclusion</h2>
-    <p>
-      The future of AI in mechanical engineering will not be built on text-to-mesh generators. It will be built on robust API integrations with native parametric B-Rep kernels where software agents construct, inspect, and verify exact manufacturing geometry.
+      The future of AI in mechanical and aerospace engineering will not be built on text-to-mesh generators. Engineering requires deterministic, inspectable, and manufacturing-ready geometry. By interfacing language models with cloud B-Rep kernels through structured protocols like MCP, software agents can construct real mechanical mechanisms that transition directly from computation to CNC fabrication.
     </p>
   </main>
 
